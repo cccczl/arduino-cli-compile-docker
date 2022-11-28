@@ -52,7 +52,7 @@ def compile_sketch(spec):
     if "version" in spec:
         output_path += "_v" + spec["version"].replace(".", "_")
     build_date = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    output_path += "_" + build_date + "Z"
+    output_path += f"_{build_date}Z"
     output_path += ".bin"
     print(f"Sketch will be compiled to {output_path}...")
 
@@ -61,10 +61,7 @@ def compile_sketch(spec):
 
 
 def _parse_version(line):
-    if "==" in line:
-        (name, version) = line.split("==", 1)
-    else:
-        (name, version) = (line.strip(), None)
+    (name, version) = line.split("==", 1) if "==" in line else (line.strip(), None)
     return (name, version)
 
 
@@ -94,9 +91,9 @@ def _compile_arduino_sketch(sketch_path, board, output_path):
 def _run_shell_command(arguments, stdout=False, stderr=True):
     process = subprocess.run(arguments, check=False, capture_output=True)
     if stdout and len(process.stdout) > 0:
-        print("> %s" % process.stdout.decode("utf-8"))
+        print(f'> {process.stdout.decode("utf-8")}')
     if stderr and len(process.stderr) > 0:
-        print("ERROR > %s" % process.stderr.decode("utf-8"))
+        print(f'ERROR > {process.stderr.decode("utf-8")}')
     return (process.returncode == 0)
 
 
@@ -110,5 +107,5 @@ if __name__ == "__main__":
         print("Specification file project.yaml not found")
         sys.exit(1)
     except yaml.YAMLError as e:
-        print("Something wrong with the syntax of project.yaml: %s" % e)
+        print(f"Something wrong with the syntax of project.yaml: {e}")
         sys.exit(1)
